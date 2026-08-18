@@ -1,0 +1,55 @@
+name: Install Google Auth
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/install-google-auth.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Rebuild and apply Google auth patch
+        shell: bash
+        run: |
+          cat tools/google-auth-patch/part*.txt | base64 -d > /tmp/google-auth.patch
+          git apply --check /tmp/google-auth.patch
+          git apply /tmp/google-auth.patch
+
+      - name: Validate JavaScript
+        shell: bash
+        run: |
+          node --check api/auth/config.js
+          node --check api/auth/google.js
+          node --check api/auth/logout.js
+          node --check api/auth/me.js
+          node --check lib/google-auth.js
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          html = Path('index.html').read_text(encoding='utf-8')
+          scripts = re.findall(r'<script(?:\s[^>]*)?>(.*?)</script>', html, re.S)
+          Path('/tmp/site-inline.js').write_text('\n'.join(scripts), encoding='utf-8')
+          PY
+          node --check /tmp/site-inline.js
+
+      - name: Commit Google auth
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html api/auth lib/google-auth.js
+          if git diff --cached --quiet; then
+            echo 'Google auth is already installed.'
+            exit 0
+          fi
+          git commit -m 'Add secure Google sign-in'
+          git push
