@@ -1,5 +1,5 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "node -e \"const fs=require('fs'),z=require('zlib');fs.mkdirSync('dist',{recursive:true});const b64=fs.readFileSync('site.gz.b64','utf8').replace(/\\s/g,'');const html=z.gunzipSync(Buffer.from(b64,'base64'));fs.writeFileSync('dist/index.html',html);console.log('Built dist/index.html:',html.length,'bytes')\"",
+  "buildCommand": "node build.js",
   "outputDirectory": "dist"
 }
