@@ -7,6 +7,12 @@
   },
   "rewrites": [
     { "source": "/", "destination": "/api/site" },
-    { "source": "/index.html", "destination": "/api/site" }
+    { "source": "/index.html", "destination": "/api/site" },
+    { "source": "/auth/login", "destination": "/api/auth0/login" },
+    { "source": "/auth/signup", "destination": "/api/auth0/signup" },
+    { "source": "/auth/callback", "destination": "/api/auth0/callback" },
+    { "source": "/auth/logout", "destination": "/api/auth0/logout" },
+    { "source": "/auth/me", "destination": "/api/auth0/me" },
+    { "source": "/auth/status", "destination": "/api/auth0/status" }
   ]
 }
