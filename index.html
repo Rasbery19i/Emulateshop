@@ -12,27 +12,45 @@ html,body{margin:0;min-height:100%;background:#05030b;color:#fff;font-family:sys
 <body>
 <div class="loader"><div class="ring"></div><strong>Emulate Shop</strong><small>Chargement…</small></div>
 <script>
-(async()=>{
-  try{
-    let b64=await fetch('/site.gz.b64?v=2',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('payload '+r.status);return r.text()});
-    b64=b64.replace(/[^A-Za-z0-9+/=]/g,'');
-    b64=b64.replace(/=+$/,'');
-    while(b64.length%4)b64+='=';
-    if(!b64)throw new Error('payload vide');
-    const bin=atob(b64);
-    const bytes=new Uint8Array(bin.length);
-    for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
-    if(!('DecompressionStream' in window))throw new Error('Navigateur non compatible avec la décompression gzip');
-    const stream=new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
-    const siteHtml=await new Response(stream).text();
-    if(!siteHtml.toLowerCase().includes('<html'))throw new Error('contenu du site invalide');
-    document.open();
-    document.write(siteHtml);
-    document.close();
-  }catch(e){
+(function(){
+  function fail(e){
     console.error(e);
-    document.body.innerHTML='<div style="max-width:680px;padding:32px;text-align:center"><h1>Emulate Shop</h1><p>Le site n\'a pas pu se charger.</p><small>'+String(e.message||e)+'</small></div>';
+    document.body.innerHTML='<div style="max-width:680px;padding:32px;text-align:center"><h1>Emulate Shop</h1><p>Le site n\'a pas pu se charger.</p><small>'+String((e&&e.message)||e||'Erreur inconnue')+'</small></div>';
   }
+  function loadPayload(){
+    return new Promise(function(resolve,reject){
+      var xhr=new XMLHttpRequest();
+      xhr.open('GET','/site.gz.b64?v=4',true);
+      xhr.timeout=20000;
+      xhr.onreadystatechange=function(){
+        if(xhr.readyState!==4)return;
+        if(xhr.status>=200&&xhr.status<300) resolve(xhr.responseText);
+        else reject(new Error('payload HTTP '+xhr.status));
+      };
+      xhr.onerror=function(){reject(new Error('chargement réseau impossible'));};
+      xhr.ontimeout=function(){reject(new Error('délai de chargement dépassé'));};
+      xhr.send(null);
+    });
+  }
+  async function start(){
+    try{
+      var b64=await loadPayload();
+      b64=String(b64||'').replace(/[^A-Za-z0-9+/=]/g,'').replace(/=+$/,'');
+      while(b64.length%4)b64+='=';
+      if(!b64)throw new Error('payload vide');
+      var bin=atob(b64);
+      var bytes=new Uint8Array(bin.length);
+      for(var i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
+      if(!('DecompressionStream' in window))throw new Error('navigateur non compatible avec gzip');
+      var stream=new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+      var siteHtml=await new Response(stream).text();
+      if(!siteHtml.toLowerCase().includes('<html'))throw new Error('contenu du site invalide');
+      document.open();
+      document.write(siteHtml);
+      document.close();
+    }catch(e){fail(e);}
+  }
+  start();
 })();
 </script>
 </body>
