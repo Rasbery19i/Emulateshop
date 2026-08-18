@@ -22,16 +22,16 @@ module.exports = async function handler(req, res) {
 
   try {
     let html = readIndex();
-    if (!html.includes("/auth-google.css")) {
+    if (!html.includes("/auth0-ui.css")) {
       html = html.replace(
         "</head>",
-        '<link rel="stylesheet" href="/auth-google.css">\n</head>'
+        '<link rel="stylesheet" href="/auth0-ui.css">\n</head>'
       );
     }
-    if (!html.includes("/auth-google.js")) {
+    if (!html.includes("/auth0-ui.js")) {
       html = html.replace(
         "</body>",
-        '<script async defer src="https://accounts.google.com/gsi/client"></script>\n<script defer src="/auth-google.js"></script>\n</body>'
+        '<script defer src="/auth0-ui.js"></script>\n</body>'
       );
     }
 
