@@ -1,0 +1,50 @@
+name: Build Emulate Shop
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'site.gz.b64'
+      - '.github/workflows/build-site.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Rebuild index.html from embedded site
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import base64, gzip
+
+          payload = ''.join(Path('site.gz.b64').read_text(encoding='utf-8').split())
+          raw = base64.b64decode(payload, validate=True)
+          html = gzip.decompress(raw).decode('utf-8')
+
+          if '<html' not in html.lower() or '</html>' not in html.lower():
+              raise SystemExit('Decoded payload is not a complete HTML document')
+
+          Path('index.html').write_text(html, encoding='utf-8')
+          print(f'index.html rebuilt: {len(html):,} characters')
+          PY
+
+      - name: Commit generated index
+        shell: bash
+        run: |
+          if git diff --quiet -- index.html; then
+            echo 'index.html is already up to date.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Deploy full Emulate Shop index without loader'
+          git push
