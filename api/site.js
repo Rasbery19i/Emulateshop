@@ -14,12 +14,12 @@ function readIndex() {
   throw new Error("index.html not found in function bundle");
 }
 
-function publishDiscordHeader(html) {
-  const discordButton = `<a id="clientBtn" class="client-btn" href="https://discord.gg/thnzjVYt2" target="_blank" rel="noopener noreferrer" aria-label="Discord">Discord</a>`;
+function publishHeaderActions(html) {
+  const headerActions = `<span style="display:inline-flex;align-items:center;gap:10px;white-space:nowrap"><a id="clientBtn" class="client-btn" href="https://discord.gg/thnzjVYt2" target="_blank" rel="noopener noreferrer" aria-label="Discord">Discord</a><a id="authLoginBtn" class="client-btn" href="/auth/login" aria-label="Connexion Auth0">Connexion</a></span>`;
 
   return html.replace(
     /<button\b[^>]*\bid=["']clientBtn["'][^>]*>[\s\S]*?<\/button>/i,
-    discordButton
+    headerActions
   );
 }
 
@@ -30,7 +30,7 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const html = publishDiscordHeader(readIndex());
+    const html = publishHeaderActions(readIndex());
 
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     res.setHeader("Cache-Control", "no-store, max-age=0");
