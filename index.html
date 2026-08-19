@@ -3854,7 +3854,7 @@ transition:transform .14s ease,border-color .14s ease,background .14s ease !impo
 </svg>
 <span class="cart-count" id="cartCount">0</span>
 </button>
-<button class="client-btn" data-i18n="client_space" id="clientBtn">Espace client</button>
+<button class="client-btn" id="clientBtn" type="button">Discord</button>
 </div>
 </div>
 </header>
@@ -4762,7 +4762,7 @@ document.querySelectorAll("[data-close]").forEach(btn => btn.addEventListener("c
 document.getElementById("cartBtn").addEventListener("click", ()=>openDrawer("cart"));
 document.getElementById("supportCta").addEventListener("click", ()=>openDrawer("support"));
 document.getElementById("supportCta2").addEventListener("click", ()=>openDrawer("support"));
-document.getElementById("clientBtn").addEventListener("click", ()=>openDrawer("client"));
+document.getElementById("clientBtn").addEventListener("click", ()=>window.open("https://discord.gg/thnzjVYt2","_blank","noopener"));
 document.getElementById("checkoutBtn").addEventListener("click", async ()=>{
   const pack = translations[currentLang] || translations.fr;
 
