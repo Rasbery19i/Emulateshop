@@ -1,0 +1,106 @@
+name: Apply V6.92 Violet Theme
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-violet-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply-theme:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Apply V6.92 theme to index.html
+        shell: python
+        run: |
+          from pathlib import Path
+
+          p = Path('index.html')
+          text = p.read_text(encoding='utf-8')
+
+          repls = {
+              '--bg:#06040d;': '--bg:#08030f;',
+              '--bg2:#0a0712;': '--bg2:#10051d;',
+              '--panel:#0d0916;': '--panel:#12071f;',
+              '--panel-2:#121022;': '--panel-2:#1b0a31;',
+              '--line:rgba(170,110,255,.18);': '--line:rgba(180,90,255,.28);',
+              '--purple:#ab52ff;': '--purple:#b044ff;',
+              '--purple-2:#7421f0;': '--purple-2:#7c22ff;',
+              '--purple-3:#d19dff;': '--purple-3:#dea8ff;',
+              '--green:#39f370;': '--green:#bd5cff;',
+              '--green-soft:rgba(57,243,112,.14);': '--green-soft:rgba(189,92,255,.16);',
+              '--gold:#ffb122;': '--gold:#d07aff;',
+              '--gold-soft:rgba(255,177,34,.13);': '--gold-soft:rgba(208,122,255,.16);',
+          }
+          for old, new in repls.items():
+              text = text.replace(old, new)
+
+          override = '''
+          <style id="emulate-violet-theme-v692">
+            :root{
+              --em-violet:#b044ff;
+              --em-violet-2:#7c22ff;
+              --em-violet-soft:rgba(176,68,255,.18);
+            }
+            body{
+              background:
+                radial-gradient(ellipse 58% 36% at 50% 8%, rgba(168,55,255,.27), transparent 62%),
+                radial-gradient(ellipse 45% 30% at 15% 52%, rgba(103,32,220,.14), transparent 66%),
+                radial-gradient(ellipse 42% 28% at 86% 72%, rgba(187,64,255,.12), transparent 68%),
+                linear-gradient(180deg,#05010b 0%,#0a0313 42%,#05010b 100%) !important;
+            }
+            .site-header{
+              background:rgba(8,2,15,.90) !important;
+              border-bottom:1px solid rgba(185,92,255,.16) !important;
+            }
+            .btn-primary,
+            .add-cart-btn,
+            .client-btn,
+            .cta-btn,
+            button[type="submit"]{
+              background:linear-gradient(135deg,#c05cff 0%,#8a2cff 52%,#6818d9 100%) !important;
+              border-color:rgba(215,155,255,.40) !important;
+              box-shadow:0 10px 30px rgba(151,48,255,.24), inset 0 1px 0 rgba(255,255,255,.12) !important;
+            }
+            .card,
+            .offer-card,
+            .review-card,
+            .vouch-card,
+            .feature-card,
+            .panel,
+            .modal-content,
+            .dropdown-menu{
+              border-color:rgba(186,90,255,.20) !important;
+            }
+            .mini-badge,
+            .badge,
+            .status-badge{
+              border-color:rgba(191,104,255,.30) !important;
+            }
+            .nav a:hover,
+            .nav a.active,
+            a:hover{
+              text-shadow:0 0 14px rgba(176,68,255,.22);
+            }
+            ::selection{background:#a63cff;color:#fff}
+          </style>
+          '''
+
+          if 'id="emulate-violet-theme-v692"' not in text:
+              text = text.replace('</head>', override + '\n</head>', 1)
+
+          p.write_text(text, encoding='utf-8')
+      - name: Commit index replacement and remove one-time workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/apply-violet-once.yml
+          git add -- index.html
+          git commit -m "Replace index with V6.92 violet theme"
+          git push origin main
