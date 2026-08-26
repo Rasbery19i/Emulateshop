@@ -23,6 +23,45 @@ function publishHeaderActions(html) {
   );
 }
 
+function publishFirmwareOneToOneDescriptions(html) {
+  const descriptions = [
+    "L’essentiel pour débuter à petit prix.",
+    "Un firmware fait pour la compétition.",
+    "La formule premium pour ceux qui veulent une expérience plus complète.",
+    "Pour les utilisateurs exigeants.",
+    "5 slot disponible.",
+
+    "The essentials to start at a low price.",
+    "A firmware made for competition.",
+    "The premium formula for those who want a more complete experience.",
+    "For demanding users.",
+    "5 slots available.",
+
+    "Lo esencial para empezar a bajo precio.",
+    "Un firmware hecho para la competición.",
+    "La fórmula premium para quienes quieren una experiencia más completa.",
+    "Para usuarios exigentes.",
+    "5 slots disponibles.",
+
+    "Das Wesentliche für einen günstigen Start.",
+    "Eine Firmware für den Wettbewerb.",
+    "Die Premium-Formel für alle, die ein vollständigeres Erlebnis wollen.",
+    "Für anspruchsvolle Nutzer.",
+    "5 Slots verfügbar.",
+
+    "الأساسيات للبدء بسعر منخفض.",
+    "فيرموير مصمم للمنافسة.",
+    "الخيار المميز لمن يريد تجربة أكثر اكتمالاً.",
+    "للمستخدمين المتطلبين.",
+    "5 فتحات متوفرة."
+  ];
+
+  for (const description of descriptions) {
+    html = html.split(description).join(`Firmware 1:1 — ${description}`);
+  }
+  return html;
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== "GET" && req.method !== "HEAD") {
     res.setHeader("Allow", "GET, HEAD");
@@ -30,7 +69,9 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const html = publishHeaderActions(readIndex());
+    let html = readIndex();
+    html = publishHeaderActions(html);
+    html = publishFirmwareOneToOneDescriptions(html);
 
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     res.setHeader("Cache-Control", "no-store, max-age=0");
