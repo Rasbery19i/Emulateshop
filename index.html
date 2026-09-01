@@ -3213,6 +3213,9 @@ transition:transform .14s ease,border-color .14s ease,background .14s ease !impo
 .offer-kicker{color:#60a5fa;font-weight:900;letter-spacing:.18em;font-size:12px;text-transform:uppercase;margin-top:2px;margin-bottom:8px}
 .offer-card h3{text-align:left;margin:0 0 10px;color:#f8fafc;font-size:20px;line-height:1.12;letter-spacing:-.02em}
 .offer-card .desc{text-align:left;min-height:auto;margin-bottom:16px;color:#94a3b8;font-size:14px;line-height:1.55}
+.offer-categories{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
+.offer-category{display:inline-flex;align-items:center;justify-content:center;padding:7px 10px;border-radius:999px;font-size:12px;font-weight:800;letter-spacing:.02em;color:#dcecff;border:1px solid rgba(83,145,255,.35);background:rgba(53,104,181,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.03)}
+.offer-slotted .offer-category{border-color:rgba(96,165,250,.34);background:linear-gradient(135deg,rgba(13,42,84,.72),rgba(37,99,235,.16));color:#dbeafe}
 .offer-card .features{margin:0 0 20px;gap:10px;color:#e2e8f0;font-size:14px;padding-top:18px;border-top:1px solid rgba(148,163,184,.12)}
 .offer-card .features li{gap:10px;line-height:1.4}.offer-card .features li .check{color:#a78bfa}.offer-slotted .features li .check{color:#fbbf24}
 .offer-bottom{margin-top:auto;display:flex;align-items:end;justify-content:space-between;gap:14px;padding-top:18px;border-top:1px solid rgba(148,163,184,.12)}
@@ -4221,12 +4224,17 @@ transition:transform .14s ease,border-color .14s ease,background .14s ease !impo
 <div class="offer-kicker">FIRMWARE</div>
 <h3 data-i18n="offer_slots5_name">Slotted</h3>
 <div class="desc" data-i18n="offer_slots5_desc">5 slot disponible.</div>
+<div class="offer-categories" aria-label="Catégories">
+<span class="offer-category">FACEIT</span>
+<span class="offer-category">VGK</span>
+<span class="offer-category">EAC</span>
+</div>
 <ul class="features compact-features">
 <li><span class="check">✓</span><span data-i18n="feat_warranty_2m">Garantie 2 mois</span></li>
 <li><span class="check">✓</span><span data-i18n="feat_support_75_100">Supporte 75T et 100T</span></li>
 <li><span class="check">✓</span><span data-i18n="feat_iommu_vtd">Full IOMMU/VT-d support included</span></li>
 </ul>
-<div class="offer-bottom"><div class="offer-price-block"><div class="offer-price-label">LIFETIME</div><div class="price" data-base-price="349.99">349,99 €</div></div><button class="choose primary" data-i18n="choose_offer" data-price="349.99" data-product="slotted">Choisir cette offre</button></div>
+<div class="offer-bottom"><div class="offer-price-block"><div class="offer-price-label">LIFETIME</div><div class="price" data-base-price="500">500,00 €</div></div><button class="choose primary" data-i18n="choose_offer" data-price="500" data-product="slotted">Choisir cette offre</button></div>
 </article>
 </div>
 <div class="info-grid">
