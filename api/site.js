@@ -62,6 +62,22 @@ function publishFirmwareOneToOneDescriptions(html) {
   return html;
 }
 
+function publishWhoofingOffer(html) {
+  const oldDescription = '<div class="desc" data-i18n="whoofing_once_desc">Accès unique.</div>';
+  const features = `${oldDescription}\n<ul class="features">\n<li><span class="check">✓</span><span>TPM</span></li>\n<li><span class="check">✓</span><span>Work with all motherboards</span></li>\n<li><span class="check">✓</span><span>SMBIOS Fixer</span></li>\n</ul>`;
+
+  if (!html.includes("SMBIOS Fixer")) {
+    html = html.replace(oldDescription, features);
+  }
+
+  html = html.replace(
+    '<div class="price" data-base-price="45">45,00 €</div>\n<button class="choose primary" data-i18n="choose_offer" data-price="45" data-product="whoofing_once">Choisir cette offre</button>',
+    '<div class="price" data-base-price="25">25,00 €</div>\n<button class="choose primary" data-i18n="choose_offer" data-price="25" data-product="whoofing_once">Choisir cette offre</button>'
+  );
+
+  return html;
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== "GET" && req.method !== "HEAD") {
     res.setHeader("Allow", "GET, HEAD");
@@ -72,6 +88,7 @@ module.exports = async function handler(req, res) {
     let html = readIndex();
     html = publishHeaderActions(html);
     html = publishFirmwareOneToOneDescriptions(html);
+    html = publishWhoofingOffer(html);
 
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     res.setHeader("Cache-Control", "no-store, max-age=0");
