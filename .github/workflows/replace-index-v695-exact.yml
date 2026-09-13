@@ -1,0 +1,46 @@
+name: Replace index with exact V6.95
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/replace-index-v695-exact.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  replace-index:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Reconstruct exact uploaded index
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v zstd >/dev/null
+          printf '%s' 'KLUv/aTHPgcAvAIA8sIIDNA9DGgLKEIin4AwAfKI5+7EDzIBRjbZkx9sEX7Uz2r1uDAPIEDj/x4/Oqmh6+BjyKtoGYFAFge0xBdA00W+ip7AALFe3WmyiPBopAO8OuhVtIrYhAAAAAIAVcHxnpEOpT5SQ+cICPwAAAAGQACAUYHPaMfkjTmQR98z0uHwIIGfLsRRx8d71lGNBgBAIC8gLi5NSEY4oNAdAxEsQ8QgImACIvQDb5Oyz8keQOzO+hwFD4HT501+mlD6fOnOtSZ/Gd36fC49M81k81kUiV5u+Tx6RieWz2PGa3NxzqnWkc/fG6eTNj6TWmlCic+fujSB+JwTBDtD/8Fn8e2J+Ma/5/JraWB7z6JK9Ch3z6Mumqx7HsNdO4lzLlsV9/z9O01WZXsuZaM5tOenMfoge56pFc8lsX8949f5ej7h5/VcnbAWpOeCBiA+S/pxV52et+Ww8PnzuTVmQkmBz/s0AgIci2w=' | base64 -d > /tmp/index-v695.zstpatch
+          zstd -d --patch-from=index.html /tmp/index-v695.zstpatch -o /tmp/index-v695.html
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib
+          data = Path('/tmp/index-v695.html').read_bytes()
+          blob_sha = hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest()
+          assert len(data) == 474823, len(data)
+          assert blob_sha == '5113259076312f2581ecc4c8a0921af628e656fa', blob_sha
+          print('Verified exact V6.95 blob:', blob_sha)
+          PY
+          mv /tmp/index-v695.html index.html
+
+      - name: Commit exact index and clean temporary workflows
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm -f .github/workflows/export-index-temp.yml .github/workflows/replace-index-v695-exact.yml
+          git add index.html
+          git commit -m 'Replace index with exact uploaded V6.95 version'
+          git push
