@@ -64,9 +64,12 @@ function publishFirmwareOneToOneDescriptions(html) {
 
 function publishWhoofingOffer(html) {
   const oldDescription = '<div class="desc" data-i18n="whoofing_once_desc">Accès unique.</div>';
-  const features = `${oldDescription}\n<ul class="features">\n<li><span class="check">✓</span><span>TPM</span></li>\n<li><span class="check">✓</span><span>Work with all motherboards</span></li>\n<li><span class="check">✓</span><span>SMBIOS Fixer</span></li>\n</ul>`;
+  const features = `${oldDescription}\n<ul class="features">\n<li><span class="check">✓</span><span>TPM</span></li>\n<li><span class="check">✓</span><span>Work with all motherboards</span></li>\n</ul>`;
 
-  if (!html.includes("SMBIOS Fixer")) {
+  // Keep the live card aligned with the uploaded V6.95 version.
+  html = html.split('<li><span class="check">✓</span><span>SMBIOS Fixer</span></li>\n').join("");
+
+  if (!html.includes("Work with all motherboards")) {
     html = html.replace(oldDescription, features);
   }
 
