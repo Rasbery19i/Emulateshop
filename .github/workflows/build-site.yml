@@ -32,6 +32,28 @@ jobs:
           if '<html' not in html.lower() or '</html>' not in html.lower():
               raise SystemExit('Decoded payload is not a complete HTML document')
 
+          old = '''<article class="card glow-purple whoofing-card">
+          <h3 data-i18n="whoofing_once_name">1 Time</h3>
+          <div class="desc" data-i18n="whoofing_once_desc">Accès unique.</div>
+          <div class="price" data-base-price="45">45,00 €</div>
+          <button class="choose primary" data-i18n="choose_offer" data-price="45" data-product="whoofing_once">Choisir cette offre</button>
+          </article>'''
+          new = '''<article class="card glow-purple whoofing-card">
+          <h3 data-i18n="whoofing_once_name">1 Time</h3>
+          <div class="desc" data-i18n="whoofing_once_desc">Accès unique.</div>
+          <ul class="features">
+          <li><span class="check">✓</span><span>TPM</span></li>
+          <li><span class="check">✓</span><span>Work with all motherboards</span></li>
+          </ul>
+          <div class="price" data-base-price="25">25,00 €</div>
+          <button class="choose primary" data-i18n="choose_offer" data-price="25" data-product="whoofing_once">Choisir cette offre</button>
+          </article>'''
+
+          if old in html:
+              html = html.replace(old, new, 1)
+          elif new not in html:
+              raise SystemExit('Whoofing product block was not found in the expected format')
+
           Path('index.html').write_text(html, encoding='utf-8')
           print(f'index.html rebuilt: {len(html):,} characters')
           PY
@@ -46,5 +68,5 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html
-          git commit -m 'Deploy full Emulate Shop index without loader'
+          git commit -m 'Deploy Emulate Shop V6.95 Whoofing 25 EUR'
           git push
