@@ -1,10 +1,9 @@
-name: Build Emulate Shop
+name: Deploy Emulate Shop V6.95
 
 on:
   push:
     branches: [main]
     paths:
-      - 'site.gz.b64'
       - '.github/workflows/build-site.yml'
   workflow_dispatch:
 
@@ -12,25 +11,20 @@ permissions:
   contents: write
 
 jobs:
-  build:
+  deploy-v695:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Rebuild index.html from embedded site
+      - name: Apply V6.95 Whoofing version
         shell: bash
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          import base64, gzip
 
-          payload = ''.join(Path('site.gz.b64').read_text(encoding='utf-8').split())
-          raw = base64.b64decode(payload, validate=True)
-          html = gzip.decompress(raw).decode('utf-8')
-
-          if '<html' not in html.lower() or '</html>' not in html.lower():
-              raise SystemExit('Decoded payload is not a complete HTML document')
+          path = Path('index.html')
+          html = path.read_text(encoding='utf-8')
 
           old = '''<article class="card glow-purple whoofing-card">
           <h3 data-i18n="whoofing_once_name">1 Time</h3>
@@ -38,6 +32,7 @@ jobs:
           <div class="price" data-base-price="45">45,00 €</div>
           <button class="choose primary" data-i18n="choose_offer" data-price="45" data-product="whoofing_once">Choisir cette offre</button>
           </article>'''
+
           new = '''<article class="card glow-purple whoofing-card">
           <h3 data-i18n="whoofing_once_name">1 Time</h3>
           <div class="desc" data-i18n="whoofing_once_desc">Accès unique.</div>
@@ -49,16 +44,17 @@ jobs:
           <button class="choose primary" data-i18n="choose_offer" data-price="25" data-product="whoofing_once">Choisir cette offre</button>
           </article>'''
 
-          if old in html:
+          if new in html:
+              print('V6.95 Whoofing block already present.')
+          elif old in html:
               html = html.replace(old, new, 1)
-          elif new not in html:
-              raise SystemExit('Whoofing product block was not found in the expected format')
-
-          Path('index.html').write_text(html, encoding='utf-8')
-          print(f'index.html rebuilt: {len(html):,} characters')
+              path.write_text(html, encoding='utf-8')
+              print('V6.95 Whoofing block applied.')
+          else:
+              raise SystemExit('Expected Whoofing block not found; refusing unsafe replacement.')
           PY
 
-      - name: Commit generated index
+      - name: Commit V6.95 index
         shell: bash
         run: |
           if git diff --quiet -- index.html; then
